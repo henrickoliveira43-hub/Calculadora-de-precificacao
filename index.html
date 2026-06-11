@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Henrique Studio | Calculadora de Precificação</title>
+    <style>
+        :root {
+            --primary: #FF5722; 
+            --background: #f4f4f9;
+            --card-bg: #ffffff;
+            --text: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 5px rgba(255, 87, 34, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #E64A19;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 6px;
+            text-align: center;
+            display: none;
+        }
+
+        .result-box h3 {
+            margin: 0 0 10px 0;
+            color: #2e7d32;
+        }
+
+        .price-display {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #1b5e20;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Henrique Studio</h2>
+        <div class="subtitle">Calculadora de Precificação Rápida</div>
+        
+        <div class="input-group">
+            <label for="custo">Custo do Produto (R$)</label>
+            <input type="number" id="custo" placeholder="Ex: 50.00" step="0.01">
+        </div>
+
+        <div class="input-group">
+            <label for="outrosCustos">Embalagem / Outros Custos (R$)</label>
+            <input type="number" id="outrosCustos" placeholder="Ex: 5.00" step="0.01" value="0">
+        </div>
+
+        <div class="input-group">
+            <label for="taxa">Taxa da Plataforma (%)</label>
+            <input type="number" id="taxa" placeholder="Ex: 14" step="0.1">
+        </div>
+
+        <div class="input-group">
+            <label for="lucro">Margem de Lucro Desejada (%)</label>
+            <input type="number" id="lucro" placeholder="Ex: 20" step="0.1">
+        </div>
+
+        <button onclick="calcularPreco()">Calcular Preço de Venda</button>
+
+        <div class="result-box" id="resultado">
+            <h3>Preço Sugerido:</h3>
+            <div class="price-display" id="precoFinal">R$ 0,00</div>
+            <p style="font-size: 0.85em; margin-top: 10px; color: #555;" id="detalhes"></p>
+        </div>
+    </div>
+
+    <script>
+        function calcularPreco() {
+            const custoProduto = parseFloat(document.getElementById('custo').value) || 0;
+            const outrosCustos = parseFloat(document.getElementById('outrosCustos').value) || 0;
+            const taxaPlataforma = parseFloat(document.getElementById('taxa').value) || 0;
+            const margemLucro = parseFloat(document.getElementById('lucro').value) || 0;
+
+            const custoTotal = custoProduto + outrosCustos;
+            
+            if (taxaPlataforma + margemLucro >= 100) {
+                alert("A soma da taxa e do lucro não pode ser igual ou maior que 100%.");
+                return;
+            }
+
+            if (custoTotal <= 0) {
+                alert("Insira um custo válido para o produto.");
+                return;
+            }
+
+            const porcentagemRestante = 1 - (taxaPlataforma / 100) - (margemLucro / 100);
+            const precoVenda = custoTotal / porcentagemRestante;
+
+            const valorTaxa = precoVenda * (taxaPlataforma / 100);
+            const valorLucro = precoVenda * (margemLucro / 100);
+
+            document.getElementById('precoFinal').innerText = `R$ ${precoVenda.toFixed(2).replace('.', ',')}`;
+            
+            const detalhesTexto = `Lucro Líquido: R$ ${valorLucro.toFixed(2).replace('.', ',')} | Taxa Paga: R$ ${valorTaxa.toFixed(2).replace('.', ',')}`;
+            document.getElementById('detalhes').innerText = detalhesTexto;
+            
+            document.getElementById('resultado').style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>
