@@ -3,197 +3,783 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Henrique Studio | Calculadora de Precificação</title>
+    <title>Henrique Studio | Calculadora de Precificação Profissional</title>
     <style>
         :root {
-            --primary: #FF5722; 
-            --background: #ffffff; /* Fundo totalmente branco para imersão em tela cheia */
-            --text: #333333;
+            --primary: #E65100;
+            --primary-light: #FF8A50;
+            --primary-dark: #BF360C;
+            --success: #2E7D32;
+            --success-light: #E8F5E9;
+            --danger: #C62828;
+            --danger-light: #FFEBEE;
+            --warning: #F9A825;
+            --bg: #FAFAFA;
+            --surface: #FFFFFF;
+            --text-primary: #1A1A1A;
+            --text-secondary: #666666;
+            --text-tertiary: #999999;
+            --border: #E0E0E0;
+            --border-focus: #FF8A50;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            min-height: 100vh;
+            align-items: flex-start;
+            padding: 24px 16px;
+            line-height: 1.6;
         }
 
         .container {
             width: 100%;
-            min-height: 100vh;
-            padding: 40px 20px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            /* Um limite máximo de largura apenas para não ficar esticado demais se aberto no computador */
-            max-width: 600px; 
+            max-width: 520px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: slideUp 0.5s ease-out;
         }
 
-        h2 {
-            text-align: center;
-            margin-top: 0;
-            color: var(--primary);
-            margin-bottom: 5px;
-            font-size: 2em;
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .subtitle {
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 32px 24px;
             text-align: center;
-            font-size: 1em;
-            color: #666;
-            margin-bottom: 35px;
+            position: relative;
+            overflow: hidden;
         }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -20%;
+            width: 200px; height: 200px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%; left: -10%;
+            width: 150px; height: 150px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .header .subtitle {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content { padding: 28px 24px; }
 
         .input-group {
             margin-bottom: 20px;
+            position: relative;
         }
 
-        label {
+        .input-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .input-group label .tooltip-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px; height: 16px;
+            background: var(--text-tertiary);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            cursor: help;
             font-weight: 600;
-            font-size: 1em;
+            flex-shrink: 0;
+        }
+
+        .input-wrapper { position: relative; }
+
+        .input-wrapper .prefix {
+            position: absolute;
+            left: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            font-weight: 500;
+            font-size: 1rem;
+            pointer-events: none;
+        }
+
+        .input-wrapper .suffix {
+            position: absolute;
+            right: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            pointer-events: none;
         }
 
         input {
             width: 100%;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 1.1em;
-            box-sizing: border-box;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-family: inherit;
+            background: var(--surface);
+            color: var(--text-primary);
+            transition: var(--transition);
+            outline: none;
         }
+
+        input.has-prefix { padding-left: 36px; }
+        input.has-suffix { padding-right: 36px; }
+
+        input::placeholder { color: var(--text-tertiary); }
 
         input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 8px rgba(255, 87, 34, 0.3);
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(255, 138, 80, 0.15);
         }
 
-        button {
+        input.error {
+            border-color: var(--danger);
+            background: var(--danger-light);
+        }
+
+        input.error:focus {
+            box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.15);
+        }
+
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 4px;
+            display: none;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .error-msg.visible { display: flex; }
+
+        .btn-primary {
             width: 100%;
             padding: 16px;
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 1.2em;
-            font-weight: bold;
+            border-radius: var(--radius-md);
+            font-size: 1.05rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 15px;
+            transition: var(--transition);
+            margin-top: 8px;
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
         }
 
-        button:hover {
-            background-color: #E64A19;
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
-        .result-box {
-            margin-top: 25px;
-            padding: 20px;
-            background-color: #e8f5e9;
+        .btn-primary:active { transform: translateY(0); }
+
+        .result-section {
+            margin-top: 24px;
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .result-section.visible { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, var(--success-light) 0%, #f1f8e9 100%);
             border: 1px solid #c8e6c9;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
+            padding: 24px;
             text-align: center;
+            position: relative;
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            color: var(--success);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .result-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--success);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .btn-copy {
+            margin-top: 12px;
+            padding: 8px 20px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .btn-copy:hover { background: #1b5e20; }
+
+        .breakdown {
+            margin-top: 16px;
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .breakdown-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.9rem;
+        }
+
+        .breakdown-row:last-child {
+            border-bottom: none;
+            padding-top: 12px;
+            margin-top: 4px;
+            border-top: 2px solid var(--border);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .breakdown-row .label {
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .breakdown-row .value {
+            font-weight: 500;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .breakdown-row.positive .value { color: var(--success); }
+        .breakdown-row.negative .value { color: var(--danger); }
+
+        .formula-box {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        .history-section {
+            margin-top: 24px;
             display: none;
         }
 
-        .result-box h3 {
-            margin: 0 0 10px 0;
-            color: #2e7d32;
-            font-size: 1.2em;
+        .history-section.visible { display: block; }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
         }
 
-        .price-display {
-            font-size: 2.2em;
-            font-weight: bold;
-            color: #1b5e20;
+        .history-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
         }
-        
-        .details-text {
-            font-size: 0.9em;
-            margin-top: 10px;
-            color: #555;
-            line-height: 1.5;
+
+        .btn-clear {
+            font-size: 0.8rem;
+            color: var(--danger);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .btn-clear:hover { background: var(--danger-light); }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            background: var(--bg);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .history-item:hover {
+            background: #f0f0f0;
+            transform: translateX(2px);
+        }
+
+        .history-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .history-item-time {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .history-item-price {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .history-item-details {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+                background: var(--surface);
+            }
+            .container {
+                border-radius: 0;
+                box-shadow: none;
+                max-width: 100%;
+            }
+            .header { padding: 24px 20px; }
+            .header h1 { font-size: 1.5rem; }
+            .content { padding: 20px 16px; }
+            .result-price { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>Henrique Studio</h2>
-        <div class="subtitle">Calculadora de Precificação Rápida</div>
-        
-        <div class="input-group">
-            <label for="custo">Custo do Produto (R$)</label>
-            <input type="number" id="custo" placeholder="Ex: 50.00" step="0.01">
+        <div class="header">
+            <h1>Henrique Studio</h1>
+            <p class="subtitle">Calculadora de Precificação Profissional</p>
         </div>
 
-        <div class="input-group">
-            <label for="outrosCustos">Embalagem / Outros Custos (R$)</label>
-            <input type="number" id="outrosCustos" placeholder="Ex: 5.00" step="0.01" value="0">
-        </div>
+        <div class="content">
+            <div class="input-group">
+                <label for="custo">
+                    Custo do Produto
+                    <span class="tooltip-icon" title="Valor que você paga pelo produto">?</span>
+                </label>
+                <div class="input-wrapper">
+                    <span class="prefix">R$</span>
+                    <input type="number" id="custo" class="has-prefix" placeholder="0,00" step="0.01" min="0">
+                </div>
+                <div class="error-msg" id="erro-custo">
+                    <span>⚠</span> Insira um valor válido maior que zero
+                </div>
+            </div>
 
-        <div class="input-group">
-            <label for="taxa">Taxa da Plataforma (%)</label>
-            <input type="number" id="taxa" placeholder="Ex: 14" step="0.1">
-        </div>
+            <div class="input-group">
+                <label for="outrosCustos">
+                    Embalagem / Outros Custos
+                    <span class="tooltip-icon" title="Custos adicionais como embalagem, etiqueta, frete interno">?</span>
+                </label>
+                <div class="input-wrapper">
+                    <span class="prefix">R$</span>
+                    <input type="number" id="outrosCustos" class="has-prefix" placeholder="0,00" step="0.01" min="0" value="0">
+                </div>
+                <div class="error-msg" id="erro-outros">
+                    <span>⚠</span> Valor não pode ser negativo
+                </div>
+            </div>
 
-        <div class="input-group">
-            <label for="lucro">Margem de Lucro Desejada (%)</label>
-            <input type="number" id="lucro" placeholder="Ex: 20" step="0.1">
-        </div>
+            <div class="input-group">
+                <label for="taxa">
+                    Taxa da Plataforma
+                    <span class="tooltip-icon" title="Percentual cobrado pelo marketplace (Shopee, Mercado Livre, etc)">?</span>
+                </label>
+                <div class="input-wrapper">
+                    <input type="number" id="taxa" placeholder="0,0" step="0.1" min="0" max="99">
+                    <span class="suffix">%</span>
+                </div>
+                <div class="error-msg" id="erro-taxa">
+                    <span>⚠</span> Taxa deve estar entre 0% e 99%
+                </div>
+            </div>
 
-        <button onclick="calcularPreco()">Calcular Preço de Venda</button>
+            <div class="input-group">
+                <label for="lucro">
+                    Margem de Lucro Desejada
+                    <span class="tooltip-icon" title="Quanto % você quer lucrar sobre o preço final de venda">?</span>
+                </label>
+                <div class="input-wrapper">
+                    <input type="number" id="lucro" placeholder="0,0" step="0.1" min="0" max="99">
+                    <span class="suffix">%</span>
+                </div>
+                <div class="error-msg" id="erro-lucro">
+                    <span>⚠</span> Lucro deve estar entre 0% e 99%
+                </div>
+            </div>
 
-        <div class="result-box" id="resultado">
-            <h3>Preço Sugerido:</h3>
-            <div class="price-display" id="precoFinal">R$ 0,00</div>
-            <p class="details-text" id="detalhes"></p>
+            <button class="btn-primary" onclick="calcularPreco()" id="btnCalcular">
+                Calcular Preço de Venda
+            </button>
+
+            <div class="result-section" id="resultado">
+                <div class="result-card">
+                    <div class="result-label">Preço de Venda Sugerido</div>
+                    <div class="result-price" id="precoFinal">R$ 0,00</div>
+                    <button class="btn-copy" id="btnCopy" onclick="copiarResultado()">Copiar valor</button>
+                </div>
+
+                <div class="breakdown">
+                    <div class="breakdown-title">Detalhamento do Cálculo</div>
+                    <div class="breakdown-row">
+                        <span class="label">🛒 Custo do produto</span>
+                        <span class="value" id="det-custo">R$ 0,00</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span class="label">📦 Outros custos</span>
+                        <span class="value" id="det-outros">R$ 0,00</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span class="label">💰 Custo total</span>
+                        <span class="value" id="det-total">R$ 0,00</span>
+                    </div>
+                    <div class="breakdown-row negative">
+                        <span class="label">🏷️ Taxa da plataforma</span>
+                        <span class="value" id="det-taxa">R$ 0,00</span>
+                    </div>
+                    <div class="breakdown-row positive">
+                        <span class="label">📈 Lucro líquido</span>
+                        <span class="value" id="det-lucro">R$ 0,00</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span class="label">🏷️ Preço de venda</span>
+                        <span class="value" id="det-preco">R$ 0,00</span>
+                    </div>
+                </div>
+
+                <div class="formula-box" id="formula">
+                    Fórmula: custoTotal ÷ (1 − taxa% − lucro%)
+                </div>
+            </div>
+
+            <div class="history-section" id="historicoSection">
+                <div class="history-header">
+                    <span class="history-title">📋 Histórico de Cálculos</span>
+                    <button class="btn-clear" onclick="limparHistorico()">Limpar</button>
+                </div>
+                <div class="history-list" id="historicoList"></div>
+            </div>
         </div>
     </div>
 
+    <div class="toast" id="toast"></div>
+
     <script>
+        const campos = ['custo', 'outrosCustos', 'taxa', 'lucro'];
+        let historico = JSON.parse(localStorage.getItem('hs_historico')) || [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderizarHistorico();
+            campos.forEach(id => {
+                const input = document.getElementById(id);
+                input.addEventListener('input', () => validarCampo(id));
+                input.addEventListener('blur', () => validarCampo(id));
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') calcularPreco();
+                });
+            });
+        });
+
+        function formatarMoeda(valor) {
+            return valor.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+        }
+
+        function formatarNumero(valor) {
+            return valor.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function validarCampo(id) {
+            const input = document.getElementById(id);
+            const erro = document.getElementById('erro-' + id.replace('outrosCustos', 'outros'));
+            const valor = parseFloat(input.value);
+            let valido = true;
+
+            if (id === 'custo') {
+                valido = !isNaN(valor) && valor > 0;
+            } else if (id === 'outrosCustos') {
+                valido = !isNaN(valor) && valor >= 0;
+            } else if (id === 'taxa' || id === 'lucro') {
+                valido = !isNaN(valor) && valor >= 0 && valor < 100;
+            }
+
+            if (!valido && input.value !== '') {
+                input.classList.add('error');
+                if (erro) erro.classList.add('visible');
+            } else {
+                input.classList.remove('error');
+                if (erro) erro.classList.remove('visible');
+            }
+            return valido;
+        }
+
+        function mostrarToast(mensagem) {
+            const toast = document.getElementById('toast');
+            toast.textContent = mensagem;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
         function calcularPreco() {
             const custoProduto = parseFloat(document.getElementById('custo').value) || 0;
             const outrosCustos = parseFloat(document.getElementById('outrosCustos').value) || 0;
             const taxaPlataforma = parseFloat(document.getElementById('taxa').value) || 0;
             const margemLucro = parseFloat(document.getElementById('lucro').value) || 0;
 
-            const custoTotal = custoProduto + outrosCustos;
-            
+            campos.forEach(id => {
+                document.getElementById(id).classList.remove('error');
+                const erroId = 'erro-' + id.replace('outrosCustos', 'outros');
+                const erroEl = document.getElementById(erroId);
+                if (erroEl) erroEl.classList.remove('visible');
+            });
+
+            let temErro = false;
+
+            if (custoProduto <= 0) {
+                document.getElementById('custo').classList.add('error');
+                document.getElementById('erro-custo').classList.add('visible');
+                temErro = true;
+            }
+            if (outrosCustos < 0) {
+                document.getElementById('outrosCustos').classList.add('error');
+                document.getElementById('erro-outros').classList.add('visible');
+                temErro = true;
+            }
+            if (taxaPlataforma < 0 || taxaPlataforma >= 100) {
+                document.getElementById('taxa').classList.add('error');
+                document.getElementById('erro-taxa').classList.add('visible');
+                temErro = true;
+            }
+            if (margemLucro < 0 || margemLucro >= 100) {
+                document.getElementById('lucro').classList.add('error');
+                document.getElementById('erro-lucro').classList.add('visible');
+                temErro = true;
+            }
             if (taxaPlataforma + margemLucro >= 100) {
-                alert("A soma da taxa e do lucro não pode ser igual ou maior que 100%.");
+                mostrarToast('A soma da taxa e do lucro não pode ser 100% ou mais');
+                document.getElementById('taxa').classList.add('error');
+                document.getElementById('lucro').classList.add('error');
+                return;
+            }
+            if (temErro) {
+                mostrarToast('Corrija os campos destacados em vermelho');
                 return;
             }
 
-            if (custoTotal <= 0) {
-                alert("Insira um custo válido para o produto.");
-                return;
-            }
-
+            const custoTotal = custoProduto + outrosCustos;
             const porcentagemRestante = 1 - (taxaPlataforma / 100) - (margemLucro / 100);
             const precoVenda = custoTotal / porcentagemRestante;
-
             const valorTaxa = precoVenda * (taxaPlataforma / 100);
             const valorLucro = precoVenda * (margemLucro / 100);
 
-            document.getElementById('precoFinal').innerText = `R$ ${precoVenda.toFixed(2).replace('.', ',')}`;
-            
-            const detalhesTexto = `Lucro Líquido: R$ ${valorLucro.toFixed(2).replace('.', ',')}<br>Taxa Paga: R$ ${valorTaxa.toFixed(2).replace('.', ',')}`;
-            document.getElementById('detalhes').innerHTML = detalhesTexto;
-            
-            document.getElementById('resultado').style.display = 'block';
-            
-            // Rola a tela suavemente para baixo para mostrar o resultado em celulares menores
-            document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'end' });
+            document.getElementById('precoFinal').textContent = formatarMoeda(precoVenda);
+            document.getElementById('det-custo').textContent = formatarMoeda(custoProduto);
+            document.getElementById('det-outros').textContent = formatarMoeda(outrosCustos);
+            document.getElementById('det-total').textContent = formatarMoeda(custoTotal);
+            document.getElementById('det-taxa').textContent = formatarMoeda(valorTaxa) + ' (' + formatarNumero(taxaPlataforma) + '%)';
+            document.getElementById('det-lucro').textContent = formatarMoeda(valorLucro) + ' (' + formatarNumero(margemLucro) + '%)';
+            document.getElementById('det-preco').textContent = formatarMoeda(precoVenda);
+
+            document.getElementById('formula').textContent =
+                'Fórmula: ' + formatarNumero(custoTotal) + ' ÷ (1 − ' + formatarNumero(taxaPlataforma) + '% − ' + formatarNumero(margemLucro) + '%) = ' + formatarNumero(precoVenda);
+
+            const resultado = document.getElementById('resultado');
+            resultado.classList.add('visible');
+            resultado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            const item = {
+                id: Date.now(),
+                data: new Date().toLocaleString('pt-BR'),
+                preco: precoVenda,
+                custo: custoProduto,
+                outros: outrosCustos,
+                taxa: taxaPlataforma,
+                lucro: margemLucro
+            };
+            historico.unshift(item);
+            if (historico.length > 10) historico = historico.slice(0, 10);
+            localStorage.setItem('hs_historico', JSON.stringify(historico));
+            renderizarHistorico();
+        }
+
+        function copiarResultado() {
+            const preco = document.getElementById('precoFinal').textContent;
+            navigator.clipboard.writeText(preco).then(() => {
+                const btn = document.getElementById('btnCopy');
+                btn.textContent = '✓ Copiado!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copiar valor';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function renderizarHistorico() {
+            const section = document.getElementById('historicoSection');
+            const list = document.getElementById('historicoList');
+
+            if (historico.length === 0) {
+                section.classList.remove('visible');
+                return;
+            }
+
+            section.classList.add('visible');
+            list.innerHTML = historico.map(item => `
+                <div class="history-item" onclick="restaurarCalculo(${item.id})">
+                    <div class="history-item-info">
+                        <span class="history-item-time">${item.data}</span>
+                        <span class="history-item-price">${formatarMoeda(item.preco)}</span>
+                        <span class="history-item-details">
+                            Custo: ${formatarMoeda(item.custo)} | Taxa: ${item.taxa}% | Lucro: ${item.lucro}%
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function restaurarCalculo(id) {
+            const item = historico.find(h => h.id === id);
+            if (!item) return;
+
+            document.getElementById('custo').value = item.custo;
+            document.getElementById('outrosCustos').value = item.outros;
+            document.getElementById('taxa').value = item.taxa;
+            document.getElementById('lucro').value = item.lucro;
+
+            calcularPreco();
+            mostrarToast('Cálculo restaurado do histórico');
+        }
+
+        function limparHistorico() {
+            historico = [];
+            localStorage.removeItem('hs_historico');
+            renderizarHistorico();
+            mostrarToast('Histórico limpo');
         }
     </script>
-
 </body>
 </html>
